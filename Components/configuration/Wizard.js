@@ -23,6 +23,22 @@ import { INDEX_PAGE } from '../../constants/Navigation';
 import Broadcast from '../../data/Broadcast';
 import { connect } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
+import { saveToKeychain } from '../../data/Keychain';
+
+
+const defaultState = {
+  step: 0,
+  ventName: true,
+  name: false,
+  airFlow: '',
+  o2Flow: '',
+  airFlowInterval: '',
+  o2FlowInterval: '',
+  ssid: '',
+  password: '',
+  storeWifi: false,
+  wifiIndex: -1,
+}
 
 class ConfigWizard extends React.Component {
 
@@ -31,18 +47,12 @@ class ConfigWizard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      step: 0,
-      ventName: true,
-      name: false,
-      airFlow: '',
-      o2Flow: '',
-      airFlowInterval: '',
-      o2FlowInterval: '',
-      ssid: '',
-      password: '',
-      storeWifi: false,
-      wifiIndex: -1,
+      ...defaultState
     };
+
+  }
+
+  componentDidMount() {
     this.broadcast = new Broadcast();
   }
 
@@ -76,6 +86,11 @@ class ConfigWizard extends React.Component {
     });
   }
 
+  async saveWifi() {
+    if (this.state.storeWifi === false) return
+    await saveToKeychain(this.state.ssid, this.state.password)
+  }
+
   render() {
     if (this.props.isConnected === false || this.props.isConfigMode === false) {
       return (
@@ -89,7 +104,7 @@ class ConfigWizard extends React.Component {
         />
       );
     }
-
+    console.log(this.state)
     return (
       <KeyboardAvoidingView>
         <ScrollView>
@@ -192,7 +207,7 @@ class ConfigWizard extends React.Component {
               })
 
               }
-              onSave={() => this.setState({ step: 6 })}
+              onSave={() => { this.saveWifi(); this.setState({ step: 6 }) }}
             />
 
             <Finish
@@ -244,6 +259,8 @@ const mapStateToProps = (state) => ({
   isTesting: state.isTesting,
   isSaved: state.isSaved,
   currentWifi: state.currentWifi,
+  storedWifi: state.storedWifi,
+
 });
 
 export default connect(mapStateToProps)(ConfigWizard);

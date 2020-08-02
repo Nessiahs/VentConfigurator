@@ -1,6 +1,6 @@
 import SInfo from 'react-native-sensitive-info';
 import Store from '../redux/Store';
-import {setDefaultWifi, setStoredWifi} from '../redux/actions/Wifi';
+import { setDefaultWifi, setStoredWifi } from '../redux/actions/Wifi';
 
 export const SHARED_PREFERENCES_NAME = 'ventConfigPrefs';
 export const KEYCHAIN_SERVICE = 'ventConfigKeychain';
@@ -21,7 +21,6 @@ export const saveToKeychain = async (key, value) => {
 
 (async () => {
   const data = await getItems();
-
   if (data.length) {
     data[0].forEach((data) => {
       //SInfo.deleteItem(data.key, {
@@ -31,7 +30,7 @@ export const saveToKeychain = async (key, value) => {
       if (data.key === 'default') {
         Store.dispatch(setDefaultWifi(data.value));
       } else {
-        Store.dispatch(setStoredWifi({ssid: data.key, password: data.value}));
+        Store.dispatch(setStoredWifi({ ssid: data.key, password: data.value }));
       }
     });
   }

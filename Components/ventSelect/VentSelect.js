@@ -77,7 +77,7 @@ class VentSelect extends React.Component {
       return null;
     }
 
-    return [this.state.wifi.find((wifi) => wifi.SSID.startsWith(SSID_PREFIX))];
+    return this.state.wifi.filter((wifi) => wifi.SSID.startsWith(SSID_PREFIX));
   }
 
   render() {

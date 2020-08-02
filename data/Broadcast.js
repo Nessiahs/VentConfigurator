@@ -23,7 +23,7 @@ const CMD_SAVE = 'config';
 const CMD_CONFIG_MODE = 'configmode';
 const CMD_TESTS = 'valvecfg';
 
-const retryTime = 100;
+const retryTime = 200;
 const TEST_DURATION = 2000;
 
 class Broadcast {
@@ -33,6 +33,7 @@ class Broadcast {
   seqPrefix;
   socket;
   broadcastSuccess = false
+  configMode = false;
 
   constructor() {
     this.socket = dgram.createSocket(socketType);
@@ -40,6 +41,7 @@ class Broadcast {
   }
 
   init() {
+    console.log('--- init broadcast ----')
     this.socket.once('listening', () =>
       this.sendBroadcast());
 
@@ -48,13 +50,14 @@ class Broadcast {
   }
 
   close() {
-    this.socket.close(() => console.log('Socet is close and can be used again'))
+    this.socket.close(() => console.log('Socket is closed and can be used again'))
   }
 
   /**
    * sends the broadcast for all ventilators no specials needed
    */
   sendBroadcast() {
+    console.log('send broadcast')
     if (this.broadcastSuccess === true) return;
     this.request = true;
     const buffer = this.stringToBuffer(
@@ -106,6 +109,7 @@ class Broadcast {
   }
 
   switchConfigMode() {
+    if (this.configMode === true) return;
     const data = store.getState();
     const sendData = {
       cmd: CMD_CONFIG_MODE,
@@ -113,6 +117,7 @@ class Broadcast {
     };
 
     this.sendToVent(sendData, data.ip);
+    setTimeout(() => this.switchConfigMode(), retryTime)
   }
 
   sendToVent(data, ip) {
@@ -126,6 +131,7 @@ class Broadcast {
   receive(msg, rinfo) {
     const data = JSON.parse(msg.toString());
     const cmd = data.cmd;
+    console.log(data)
     switch (cmd) {
       case SCAN_CMD:
         return;
@@ -141,6 +147,7 @@ class Broadcast {
         );
         break;
       case STATUS_CONFIG_MODE:
+        this.configMode = true;
         store.dispatch(setConfigMode(true));
         break;
       case STATUS_TESTING:

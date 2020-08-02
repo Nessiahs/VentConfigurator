@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
-import {TextInput, View, Text, StyleSheet, Button} from 'react-native';
-import {connect} from 'react-redux';
-import {saveToKeychain} from '../../data/Keychain';
+import React from 'react';
+import { TextInput, View, Text, StyleSheet, Button } from 'react-native';
+import { connect } from 'react-redux';
+import { saveToKeychain } from '../../data/Keychain';
+import { bindActionCreators } from 'redux';
+import { setDefaultWifi } from '../../redux/actions/Wifi';
+import CheckBox from '@react-native-community/checkbox';
 
 class DefaultWif extends React.Component {
   constructor(props) {
@@ -10,18 +13,20 @@ class DefaultWif extends React.Component {
       ssid: '',
       password: '',
       stores: false,
+      clearPW: false,
     };
   }
 
   componentDidMount() {
-    this.setState({ssid: this.props.currentWifi});
+    this.setState({ ssid: this.props.currentWifi });
   }
 
   async save() {
-    this.setState({stores: true});
+    this.setState({ stores: true });
 
     await saveToKeychain(this.state.ssid, this.state.password);
     await saveToKeychain('default', this.state.ssid);
+    this.props.setDefaultWifi(this.state.ssid);
   }
 
   render() {
@@ -38,15 +43,24 @@ class DefaultWif extends React.Component {
           <TextInput
             style={styles.input}
             value={this.state.ssid}
-            onChangeText={(text) => this.setState({ssid: text})}
+            onChangeText={(text) => this.setState({ ssid: text })}
           />
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
-            secureTextEntry={true}
+            secureTextEntry={!this.state.clearPW}
             value={this.state.password}
-            onChangeText={(text) => this.setState({password: text})}
+            onChangeText={(text) => this.setState({ password: text })}
           />
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <CheckBox
+              style={{ width: 50 }}
+              onValueChange={() => this.setState({ clearPW: !this.state.clearPW })}
+              value={this.state.clearPW}
+              tintColors={{ true: '#a4c936' }}
+            />
+            <Text style={{ width: 200 }}>Show password</Text>
+          </View>
           <View style={styles.button}>
             <Button
               title={'Save'}
@@ -65,13 +79,22 @@ class DefaultWif extends React.Component {
   }
 }
 
+
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators(
+    {
+      setDefaultWifi
+    },
+    dispatch,
+  );
+
 const mapStateToProps = (state) => ({
   currentWifi: state.currentWifi,
   defaultWifi: state.defaultWifi,
   currentWifi: state.currentWifi,
 });
 
-export default connect(mapStateToProps)(DefaultWif);
+export default connect(mapStateToProps, mapDispatchToProps)(DefaultWif);
 
 const styles = StyleSheet.create({
   input: {
