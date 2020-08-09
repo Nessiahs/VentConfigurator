@@ -5,20 +5,30 @@ import { saveToKeychain } from '../../data/Keychain';
 import { bindActionCreators } from 'redux';
 import { setDefaultWifi } from '../../redux/actions/Wifi';
 import CheckBox from '@react-native-community/checkbox';
-
+import WifiManager from "react-native-wifi-reborn";
 class DefaultWif extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ssid: '',
+      ssid: null,
       password: '',
       stores: false,
       clearPW: false,
+      currentSsid: '',
     };
   }
 
   componentDidMount() {
     this.setState({ ssid: this.props.currentWifi });
+
+    WifiManager.getCurrentWifiSSID().then(
+      ssid => {
+        this.setState({ ssid: ssid })
+      },
+      () => {
+        console.log("Cannot get current SSID!");
+      }
+    );
   }
 
   async save() {

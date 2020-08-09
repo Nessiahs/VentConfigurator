@@ -59,9 +59,10 @@ class VentSelect extends React.Component {
       .catch(() => this.setState({ wifi: [], indicator: false }));
   }
 
-  connect(index) {
+  connect(ssid) {
+    console.log('switch to ' + ssid)
     WifiManager.connectToProtectedSSID(
-      this.state.wifi[index].SSID,
+      ssid,
       '',
       false,
     ).then(
@@ -103,7 +104,7 @@ class VentSelect extends React.Component {
                     activity: CONNECT_TEXT,
                     wifi: null,
                   });
-                  this.connect(index);
+                  this.connect(item.SSID);
                 }}
               />
             )}

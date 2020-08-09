@@ -41,7 +41,6 @@ class Broadcast {
   }
 
   init() {
-    console.log('--- init broadcast ----')
     this.socket.once('listening', () =>
       this.sendBroadcast());
 
@@ -57,7 +56,6 @@ class Broadcast {
    * sends the broadcast for all ventilators no specials needed
    */
   sendBroadcast() {
-    console.log('send broadcast')
     if (this.broadcastSuccess === true) return;
     this.request = true;
     const buffer = this.stringToBuffer(
@@ -75,7 +73,7 @@ class Broadcast {
       (err) => {
         // TODO send status to app for network reconnect
         //{message: "sendto failed: ENETUNREACH (Network is unreachable)"}
-        console.log(err);
+        console.log(err, this.ip);
       },
     );
 
@@ -131,7 +129,6 @@ class Broadcast {
   receive(msg, rinfo) {
     const data = JSON.parse(msg.toString());
     const cmd = data.cmd;
-    console.log(data)
     switch (cmd) {
       case SCAN_CMD:
         return;

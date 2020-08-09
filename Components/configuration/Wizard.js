@@ -53,7 +53,7 @@ class ConfigWizard extends React.Component {
   }
 
   componentDidMount() {
-    this.broadcast = new Broadcast();
+    setTimeout(() => this.broadcast = new Broadcast(), 2000);
   }
 
   componentDidUpdate() {
