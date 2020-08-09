@@ -60,15 +60,14 @@ class VentSelect extends React.Component {
   }
 
   connect(ssid) {
-    console.log('switch to ' + ssid)
     WifiManager.connectToProtectedSSID(
       ssid,
-      '',
-      false,
+      ssid.substring(4),
+      true,
     ).then(
       () => this.props.navigation.navigate(VENT_INSTALL),
       () => {
-        console.log('Connection failed!');
+        console.log('Connection failed! ---->');
       },
     );
   }
