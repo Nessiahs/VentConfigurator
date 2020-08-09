@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Button} from 'react-native';
+import { View, Button } from 'react-native';
 
 const Finish = (props) => {
-  if (props.step < props.active) {
+  if (props.step !== props.active) {
     return null;
   }
   return (
@@ -10,6 +10,7 @@ const Finish = (props) => {
       <Button
         title="Update Vent"
         color="green"
+        disabled={props.disabled}
         onPress={props.onPress}></Button>
     </View>
   );

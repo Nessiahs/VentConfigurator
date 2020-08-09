@@ -5,7 +5,8 @@ import {
   View,
   Keyboard,
   KeyboardAvoidingView,
-  Dimensions
+  Dimensions,
+  TouchableNativeFeedbackBase
 } from 'react-native';
 import NameInput from './Name';
 import FlowAdjust from './FlowAdjust';
@@ -16,28 +17,31 @@ import {
   AIR_FLOW_KEY,
   O2_FLOW_KEY,
   AIR_TEN_TIMES_FLOW_KEY,
+  O2_TEM_TIMES_FLOW_KEY
 } from '../../constants/App';
 import NetworkSetup from './NetworkSetup';
 import Finish from './Finish';
-import { INDEX_PAGE } from '../../constants/Navigation';
+import { INDEX_PAGE, VENT_SELECT_PAGE } from '../../constants/Navigation';
 import Broadcast from '../../data/Broadcast';
 import { connect } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
 import { saveToKeychain } from '../../data/Keychain';
+import ConfigDone from './CongigDone';
 
 
 const defaultState = {
   step: 0,
   ventName: true,
   name: false,
-  airFlow: '',
-  o2Flow: '',
-  airFlowInterval: '',
-  o2FlowInterval: '',
+  airFlow: '666',
+  o2Flow: '666',
+  airFlowInterval: '666',
+  o2FlowInterval: '666',
   ssid: '',
   password: '',
   storeWifi: false,
   wifiIndex: -1,
+  isSaved: false,
 }
 
 class ConfigWizard extends React.Component {
@@ -61,9 +65,8 @@ class ConfigWizard extends React.Component {
       this.broadcast.switchConfigMode()
     }
 
-    if (this.props.isSaved === true) {
+    if (this.state.isSaved === true) {
       this.broadcast.close()
-      this.props.navigation.navigate(INDEX_PAGE);
     }
   }
 
@@ -74,7 +77,6 @@ class ConfigWizard extends React.Component {
 
   updateVent() {
     Keyboard.dismiss();
-
     this.broadcast.saveVent({
       c_name: this.state.name,
       c_flair: this.state.airFlow,
@@ -83,7 +85,8 @@ class ConfigWizard extends React.Component {
       c_into2: this.state.o2FlowInterval,
       c_ssid: this.state.ssid,
       c_passwd: this.state.password,
-    });
+    }, () => { this.setState({ isSaved: true, step: 10 }); console.log('callback executed') });
+
   }
 
   async saveWifi() {
@@ -104,7 +107,7 @@ class ConfigWizard extends React.Component {
         />
       );
     }
-    console.log(this.state)
+
     return (
       <KeyboardAvoidingView>
         <ScrollView>
@@ -180,7 +183,7 @@ class ConfigWizard extends React.Component {
               }
               actionButton={{
                 title: 'O2/10x',
-                onPress: () => this.sendVentTestCmd(AIR_TEN_TIMES_FLOW_KEY),
+                onPress: () => this.sendVentTestCmd(O2_TEM_TIMES_FLOW_KEY),
               }}
               onSave={() => this.setState({ step: 5 })}
               minValue={AIR_FLOW_MIN}
@@ -214,7 +217,10 @@ class ConfigWizard extends React.Component {
               active={6}
               step={this.state.step}
               onPress={() => this.updateVent()}
+              disabled={this.state.disabled}
+
             />
+            <ConfigDone active={10} step={this.state.step} onClick={() => { console.log('switch back to index'), this.props.navigation.navigate(VENT_SELECT_PAGE) }} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

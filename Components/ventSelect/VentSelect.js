@@ -42,6 +42,7 @@ class VentSelect extends React.Component {
   }
 
   componentDidMount() {
+
     this.loadWifiList();
     if (this.props.currentWifi === null) {
       WifiManager.getCurrentWifiSSID().then((ssid) =>
@@ -49,6 +50,7 @@ class VentSelect extends React.Component {
       );
     }
   }
+
 
   loadWifiList() {
     WifiManager.reScanAndLoadWifiList()

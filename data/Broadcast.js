@@ -18,6 +18,7 @@ const SCAN_CMD = 'scan';
 const STATUS_CONFIG_MODE = 'configuring';
 const STATUS_CMD = 'status';
 const STATUS_TESTING = 'valverun'
+const STATUS_CONFIG_SAVED = 'configack';
 
 const CMD_SAVE = 'config';
 const CMD_CONFIG_MODE = 'configmode';
@@ -34,6 +35,7 @@ class Broadcast {
   socket;
   broadcastSuccess = false
   configMode = false;
+  callback = null;
 
   constructor() {
     this.socket = dgram.createSocket(socketType);
@@ -82,7 +84,8 @@ class Broadcast {
     }, retryTime);
   }
 
-  saveVent(sendData) {
+  saveVent(sendData, callback) {
+    this.callback = callback;
     const data = store.getState();
     sendData.cmd = CMD_SAVE;
     sendData.mac = data.mac;
@@ -149,6 +152,9 @@ class Broadcast {
         break;
       case STATUS_TESTING:
         setTimeout(() => store.dispatch(setVentTesting(false)), TEST_DURATION)
+        break;
+      case STATUS_CONFIG_SAVED:
+        this.callback();
         break;
       default:
         console.log(data);

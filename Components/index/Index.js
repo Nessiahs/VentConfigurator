@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
-import {PermissionsAndroid} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { PermissionsAndroid } from 'react-native';
 
 import * as RootNavigation from '../../RootNavigation';
-import {VENT_SELECT_PAGE} from '../../constants/Navigation';
+import { VENT_SELECT_PAGE } from '../../constants/Navigation';
 
 let displayed = false;
 let permission;
@@ -23,7 +23,6 @@ function getPermissions(setIsVisible) {
   )
     .then((granted) => {
       permission = granted;
-      console.log('permission is ===>', granted);
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         RootNavigation.navigate(VENT_SELECT_PAGE);
       } else {

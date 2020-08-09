@@ -6,6 +6,7 @@ to switch with the ESP to the config wifi, open Arduino IDE go to Tools >> Seria
 
 ```
 "blafasel "Passwort wificonfig
+
 ```
 
 to display network messages type:
@@ -132,6 +133,8 @@ mac: mac
 
 ```
 
-```
+Grandle build
 
-```
+./gradlew clean
+./gradlew buildRelease
+./gradlew assembleRelease
